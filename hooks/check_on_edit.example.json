@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {
+      "dirs": ["content"],
+      "command": ["python", "tools/content_check.py", "{file}", "--profile", "{profile}"],
+      "hit_exit_code": 1,
+      "profiles": {
+        "*social*": "strict",
+        "*": "default"
+      }
+    }
+  ]
+}

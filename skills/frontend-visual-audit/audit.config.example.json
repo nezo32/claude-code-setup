@@ -1,0 +1,17 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "localeInPath": true,
+  "appRoutes": ["dashboard", "projects", "settings", "billing", "users", "profile"],
+  "anonRoutes": ["", "pricing", "login", "signup", "forgot-password"],
+  "detailFromLists": ["projects", "users"],
+  "lightSample": ["dashboard", "settings", "login", ""],
+  "primaryTheme": "dark",
+  "contentSelector": "main",
+  "overlayTriggers": ["New", "Create", "Invite", "Add", "Edit", "Filter", "Export", "Delete", "Manage", "Rename"],
+  "maxOverlaysPerPage": 8,
+  "viewports": {
+    "mobile": { "width": 390, "height": 844 },
+    "desktop": { "width": 1440, "height": 900 },
+    "wide": { "width": 1920, "height": 1080 }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "no_delete": ["datasets", "archive", "weights"],
+  "no_overwrite": ["datasets", "archive"],
+  "frozen_globs": ["weights/**/*.safetensors", "weights/*.safetensors"],
+  "secret_names": [".env", ".env.local", ".env.production"]
+}

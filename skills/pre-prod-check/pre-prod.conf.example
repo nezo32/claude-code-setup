@@ -1,0 +1,45 @@
+# pre-prod.conf - gates for pre-prod-check.sh. Copy to .claude/pre-prod.conf.
+# Sourced by bash. Each gate: "label|command" or "label|command|requires=<binary>".
+# Commands run from the repo root via `bash -c`.
+
+# Module dirs checked by the audit phase (clean, on a branch, no tracked secrets).
+MODULES="api worker web"
+
+STATIC_GATES=(
+  "api: build|cd api && go build ./..."
+  "api: vet|cd api && go vet ./..."
+  "api: test|cd api && go test ./..."
+  "api: lint (CI-blocking)|cd api && golangci-lint run ./...|requires=golangci-lint"
+  "worker: typecheck|cd worker && npx --no-install tsc --noEmit"
+  "web: format check (CI-blocking)|cd web && npm run format:check"
+  "api: generated types up to date|cd api && go generate ./... && git diff --quiet"
+  "openapi: vendored copy matches source|cmp -s api/openapi.yaml web/openapi/api.yaml"
+  "compose config valid|docker compose config -q|requires=docker"
+)
+
+# Directories scanned for focused tests (.only / .skip("name")).
+TEST_DIRS="e2e api worker/src"
+# Optional: a script that exits non-zero if a test can pass having asserted nothing.
+VACUOUS_CHECK=""
+# Source dirs for the informational TODO/FIXME count.
+SOURCE_DIRS="api worker/src web/src"
+
+# up phase
+UP_CHECK='[ "$(docker compose ps --status running --format "{{.Service}}" | wc -l)" -ge 5 ]'
+UP_CMD="docker compose up -d --build"
+READY_CMD="cd e2e && node readiness.mjs"
+
+# e2e phase
+E2E_GATES=(
+  "api e2e (fast set)|cd e2e && npm test"
+)
+E2E_FULL_GATES=(
+  "pipeline e2e (full flow)|cd e2e && npm run test:pipeline"
+  "resilience e2e (stops/starts services)|cd e2e && npm run test:resilience"
+)
+
+# Coverage this gate knowingly does NOT provide. Printed as WARN on every run so it
+# sits next to the PASS count instead of being inferred from a green run.
+KNOWN_GAPS=(
+  # "sweep cases self-skip: their default timeouts exceed any e2e budget"
+)
